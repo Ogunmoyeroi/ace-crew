@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ACE Crew</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="ACE Party Rental crew app: jobs, reports and time sheets.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ACE Crew">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  :root { --bg: #000; --ink: #fff; --muted: rgba(255,255,255,.66); --line: rgba(255,255,255,.16); --card: #141414; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink);
+    font: 16px/1.45 Montserrat, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { overflow: hidden; }
+  /* The crew app fills the screen, below the phone's status bar. */
+  #app { position: fixed; left: 0; right: 0; bottom: 0; top: env(safe-area-inset-top, 0); width: 100%; height: calc(100% - env(safe-area-inset-top, 0px)); border: 0; background: #f2f2f7; display: block; }
+  .screen { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px)); text-align: center; background: var(--bg); transition: opacity .35s ease; }
+  .screen.gone { opacity: 0; pointer-events: none; }
+  .brand { display: flex; flex-direction: column; align-items: center; color: var(--ink); }
+  .brand .mark { width: 92px; height: 103px; }
+  .brand .word { font-weight: 700; font-size: 17px; letter-spacing: .06em; margin-top: 10px; }
+  .brand .sub { font-weight: 600; font-size: 11px; letter-spacing: .32em; color: var(--muted); margin-top: 4px; padding-left: .32em; }
+  h1 { font-size: 21px; margin: 26px 0 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+  p { margin: 0 0 10px; color: var(--muted); max-width: 340px; }
+  .spin { width: 26px; height: 26px; margin-top: 22px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--ink); animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } .screen { transition: none; } }
+  .btn { display: block; width: 100%; max-width: 340px; min-height: 52px; margin: 8px auto 0; border: 0; border-radius: 14px; font: inherit; font-weight: 700; font-size: 17px; cursor: pointer; text-decoration: none; display: flex; align-items: center; justify-content: center; }
+  .btn { text-transform: uppercase; letter-spacing: .08em; font-size: 14px; border-radius: 4px; }
+  .btn.primary { background: var(--ink); color: #000; }
+  .btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
+  .steps { list-style: none; padding: 0; margin: 16px auto 6px; max-width: 340px; text-align: left; background: var(--card); border-radius: 8px; overflow: hidden; font-size: 15px; }
+  .steps li { display: flex; gap: 12px; align-items: center; padding: 13px 14px; border-bottom: 1px solid var(--line); }
+  .steps li:last-child { border-bottom: 0; }
+  .num { width: 26px; height: 26px; flex: none; border-radius: 50%; background: var(--ink); color: #000; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  .ico { display: inline-block; width: 18px; height: 18px; vertical-align: -3px; }
+  .small { font-size: 13px; color: var(--muted); margin-top: 14px; }
+  button:focus-visible, a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- Shown while the crew app loads (every launch from the home screen). -->
+<div class="screen" id="splash" hidden>
+  <div class="brand" role="img" aria-label="ACE Party Rental"><svg class="mark" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112" fill="currentColor" color="#fff">
+  <defs>
+    <mask id="cut1" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="112">
+      <rect width="100" height="112" fill="#fff"/>
+      <path fill="#000" d="M47.2 29 C45 35 37 41 32.6 47.2 L41.2 47.2 C42.8 40.4 45.4 34.6 47.2 29 Z"/>
+      <path fill="#000" d="M52.8 29 C55 35 63 41 67.4 47.2 L58.8 47.2 C57.2 40.4 54.6 34.6 52.8 29 Z"/>
+      <path fill="#000" d="M49.2 33 C47.8 38 46.4 42.6 45.6 47.2 L48.4 47.2 C48.6 42.6 48.8 38 49.2 33 Z"/>
+      <path fill="#000" d="M50.8 33 C52.2 38 53.6 42.6 54.4 47.2 L51.6 47.2 C51.4 42.6 51.2 38 50.8 33 Z"/>
+    </mask>
+  </defs>
+  <rect x="49.2" y="1.5" width="1.6" height="20" rx="0.6"/>
+  <path d="M50.4 2.2 L61 3 L58.2 6 L61 9 L50.4 9.2 Z"/>
+  <path mask="url(#cut1)" d="M50 18.5 C49 27 41 32.5 34.4 39.4 C30.4 43.4 28.4 46.4 28.2 49.6 L71.8 49.6 C71.6 46.4 69.6 43.4 65.6 39.4 C59 32.5 51 27 50 18.5 Z"/>
+  <path d="M28 49 H72 V51.4 C72 54.6 70.2 55.4 68.6 53.6 C68.8 55.8 65.6 55.8 64 53.6 C62.4 55.8 59.2 55.8 57.6 53.6 C56 55.8 52.8 55.8 51.2 53.6 C49.6 55.8 46.4 55.8 44.8 53.6 C43.2 55.8 40 55.8 38.4 53.6 C36.8 55.8 33.6 55.8 32 53.6 C30.4 55.8 29.2 55.6 28.6 53.6 C28.2 53 28 52.2 28 51.4 Z"/>
+  <path d="M26.2 56.6 C21.8 59.6 17.4 63.8 15.6 69.4 C13.4 76.6 16.2 83.6 23 86.6 C30.2 89.6 38.6 87.4 44 82 C44.2 90.2 41 97.4 35.6 102.6 L34.6 105.6 H65.4 L64.4 102.6 C59 97.4 55.8 90.2 56 82 C61.4 87.4 69.8 89.6 77 86.6 C83.8 83.6 86.6 76.6 84.4 69.4 C82.6 63.8 78.2 59.6 73.8 56.6 C72.2 57.8 69.8 57.8 68 56.4 C66.4 57.8 63.2 57.8 61.6 56.4 C60 57.8 56.8 57.8 55.2 56.4 C53.6 57.8 50.4 57.8 48.8 56.4 C47.2 57.8 44 57.8 42.4 56.4 C40.8 57.8 37.6 57.8 36 56.4 C34.4 57.8 31.2 57.8 29.6 56.4 C28.6 57.2 27.2 57.3 26.2 56.6 Z"/>
+</svg>
+<div class="word">ACE PARTY RENTAL</div><div class="sub">CREW APP</div></div>
+  <div class="spin" role="status" aria-label="Loading"></div>
+</div>
+
+<!-- Shown when the link is opened in a browser: get the app on the home screen first. -->
+<div class="screen" id="install" hidden>
+  <div class="brand" role="img" aria-label="ACE Party Rental crew app"><svg class="mark" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112" fill="currentColor" color="#fff">
+  <defs>
+    <mask id="cut2" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="112">
+      <rect width="100" height="112" fill="#fff"/>
+      <path fill="#000" d="M47.2 29 C45 35 37 41 32.6 47.2 L41.2 47.2 C42.8 40.4 45.4 34.6 47.2 29 Z"/>
+      <path fill="#000" d="M52.8 29 C55 35 63 41 67.4 47.2 L58.8 47.2 C57.2 40.4 54.6 34.6 52.8 29 Z"/>
+      <path fill="#000" d="M49.2 33 C47.8 38 46.4 42.6 45.6 47.2 L48.4 47.2 C48.6 42.6 48.8 38 49.2 33 Z"/>
+      <path fill="#000" d="M50.8 33 C52.2 38 53.6 42.6 54.4 47.2 L51.6 47.2 C51.4 42.6 51.2 38 50.8 33 Z"/>
+    </mask>
+  </defs>
+  <rect x="49.2" y="1.5" width="1.6" height="20" rx="0.6"/>
+  <path d="M50.4 2.2 L61 3 L58.2 6 L61 9 L50.4 9.2 Z"/>
+  <path mask="url(#cut2)" d="M50 18.5 C49 27 41 32.5 34.4 39.4 C30.4 43.4 28.4 46.4 28.2 49.6 L71.8 49.6 C71.6 46.4 69.6 43.4 65.6 39.4 C59 32.5 51 27 50 18.5 Z"/>
+  <path d="M28 49 H72 V51.4 C72 54.6 70.2 55.4 68.6 53.6 C68.8 55.8 65.6 55.8 64 53.6 C62.4 55.8 59.2 55.8 57.6 53.6 C56 55.8 52.8 55.8 51.2 53.6 C49.6 55.8 46.4 55.8 44.8 53.6 C43.2 55.8 40 55.8 38.4 53.6 C36.8 55.8 33.6 55.8 32 53.6 C30.4 55.8 29.2 55.6 28.6 53.6 C28.2 53 28 52.2 28 51.4 Z"/>
+  <path d="M26.2 56.6 C21.8 59.6 17.4 63.8 15.6 69.4 C13.4 76.6 16.2 83.6 23 86.6 C30.2 89.6 38.6 87.4 44 82 C44.2 90.2 41 97.4 35.6 102.6 L34.6 105.6 H65.4 L64.4 102.6 C59 97.4 55.8 90.2 56 82 C61.4 87.4 69.8 89.6 77 86.6 C83.8 83.6 86.6 76.6 84.4 69.4 C82.6 63.8 78.2 59.6 73.8 56.6 C72.2 57.8 69.8 57.8 68 56.4 C66.4 57.8 63.2 57.8 61.6 56.4 C60 57.8 56.8 57.8 55.2 56.4 C53.6 57.8 50.4 57.8 48.8 56.4 C47.2 57.8 44 57.8 42.4 56.4 C40.8 57.8 37.6 57.8 36 56.4 C34.4 57.8 31.2 57.8 29.6 56.4 C28.6 57.2 27.2 57.3 26.2 56.6 Z"/>
+</svg>
+<div class="word">ACE PARTY RENTAL</div><div class="sub">CREW APP</div></div>
+  <h1>Put it on your phone</h1>
+  <p>One icon on your home screen. Tap it every morning to start your day, send reports and end your day.</p>
+
+  <div id="androidWay" hidden>
+    <button class="btn primary" id="installBtn">Install ACE Crew</button>
+    <ol class="steps" id="androidSteps" hidden>
+      <li><span class="num">1</span><span>Tap the <b>⋮</b> menu at the top right of Chrome</span></li>
+      <li><span class="num">2</span><span>Tap <b>Add to Home screen</b> or <b>Install app</b></span></li>
+      <li><span class="num">3</span><span>Tap <b>Install</b>, then open ACE Crew from your home screen</span></li>
+    </ol>
+  </div>
+
+  <div id="iosWay" hidden>
+    <ol class="steps">
+      <li><span class="num">1</span><span>Tap <b>Share</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg> at the bottom of Safari</span></li>
+      <li><span class="num">2</span><span>Scroll down and tap <b>Add to Home Screen</b></span></li>
+      <li><span class="num">3</span><span>Tap <b>Add</b>, then open ACE Crew from your home screen</span></li>
+    </ol>
+    <p class="small" id="notSafari" hidden>On iPhone this only works in <b>Safari</b>. Copy this link and open it in Safari.</p>
+  </div>
+
+  <div id="otherWay" hidden>
+    <p>Open this link on your phone to add ACE Crew to your home screen.</p>
+  </div>
+
+  <button class="btn ghost" id="openNow">Open without installing</button>
+</div>
+
+<!-- Shown when the phone has no signal at launch. -->
+<div class="screen" id="offline" hidden>
+  <div class="brand" role="img" aria-label="ACE Party Rental"><svg class="mark" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112" fill="currentColor" color="#fff">
+  <defs>
+    <mask id="cut3" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="112">
+      <rect width="100" height="112" fill="#fff"/>
+      <path fill="#000" d="M47.2 29 C45 35 37 41 32.6 47.2 L41.2 47.2 C42.8 40.4 45.4 34.6 47.2 29 Z"/>
+      <path fill="#000" d="M52.8 29 C55 35 63 41 67.4 47.2 L58.8 47.2 C57.2 40.4 54.6 34.6 52.8 29 Z"/>
+      <path fill="#000" d="M49.2 33 C47.8 38 46.4 42.6 45.6 47.2 L48.4 47.2 C48.6 42.6 48.8 38 49.2 33 Z"/>
+      <path fill="#000" d="M50.8 33 C52.2 38 53.6 42.6 54.4 47.2 L51.6 47.2 C51.4 42.6 51.2 38 50.8 33 Z"/>
+    </mask>
+  </defs>
+  <rect x="49.2" y="1.5" width="1.6" height="20" rx="0.6"/>
+  <path d="M50.4 2.2 L61 3 L58.2 6 L61 9 L50.4 9.2 Z"/>
+  <path mask="url(#cut3)" d="M50 18.5 C49 27 41 32.5 34.4 39.4 C30.4 43.4 28.4 46.4 28.2 49.6 L71.8 49.6 C71.6 46.4 69.6 43.4 65.6 39.4 C59 32.5 51 27 50 18.5 Z"/>
+  <path d="M28 49 H72 V51.4 C72 54.6 70.2 55.4 68.6 53.6 C68.8 55.8 65.6 55.8 64 53.6 C62.4 55.8 59.2 55.8 57.6 53.6 C56 55.8 52.8 55.8 51.2 53.6 C49.6 55.8 46.4 55.8 44.8 53.6 C43.2 55.8 40 55.8 38.4 53.6 C36.8 55.8 33.6 55.8 32 53.6 C30.4 55.8 29.2 55.6 28.6 53.6 C28.2 53 28 52.2 28 51.4 Z"/>
+  <path d="M26.2 56.6 C21.8 59.6 17.4 63.8 15.6 69.4 C13.4 76.6 16.2 83.6 23 86.6 C30.2 89.6 38.6 87.4 44 82 C44.2 90.2 41 97.4 35.6 102.6 L34.6 105.6 H65.4 L64.4 102.6 C59 97.4 55.8 90.2 56 82 C61.4 87.4 69.8 89.6 77 86.6 C83.8 83.6 86.6 76.6 84.4 69.4 C82.6 63.8 78.2 59.6 73.8 56.6 C72.2 57.8 69.8 57.8 68 56.4 C66.4 57.8 63.2 57.8 61.6 56.4 C60 57.8 56.8 57.8 55.2 56.4 C53.6 57.8 50.4 57.8 48.8 56.4 C47.2 57.8 44 57.8 42.4 56.4 C40.8 57.8 37.6 57.8 36 56.4 C34.4 57.8 31.2 57.8 29.6 56.4 C28.6 57.2 27.2 57.3 26.2 56.6 Z"/>
+</svg>
+<div class="word">ACE PARTY RENTAL</div><div class="sub">CREW APP</div></div>
+  <h1>No signal</h1>
+  <p>ACE Crew needs a connection to open. Anything you already saved on this phone is still there.</p>
+  <button class="btn primary" id="retry">Try again</button>
+</div>
+
+<iframe id="app" title="ACE Crew" hidden allow="camera; microphone; geolocation; clipboard-write; fullscreen"></iframe>
+
+<script>
+/* The live crew app (Google Apps Script web app). Same link the crew already use. */
+var APP_URL = 'https://script.google.com/macros/s/AKfycbyntfH-As7scfhvSp8JK3xskHSYJKeLmz3hUjyozvto7i8meIHAe_G4b-aiDARuTnEC/exec';
+
+var $ = function (id) { return document.getElementById(id); };
+var ua = navigator.userAgent;
+var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+var isAndroid = /Android/.test(ua);
+var standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+var installEvent = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+
+function show(id) { ['splash', 'install', 'offline'].forEach(function (s) { $(s).hidden = s !== id; $(s).classList.remove('gone'); }); }
+
+function openApp() {
+  if (!navigator.onLine) { show('offline'); return; }
+  show('splash');
+  var f = $('app');
+  f.hidden = false;
+  var done = false;
+  var reveal = function () { if (done) return; done = true; setTimeout(function () { $('splash').classList.add('gone'); }, 600); };
+  f.addEventListener('load', reveal, { once: true });
+  setTimeout(reveal, 12000); // never leave the logo up forever on a slow connection
+  if (!f.src) f.src = APP_URL;
+}
+
+function showInstall() {
+  show('install');
+  if (isIOS) {
+    $('iosWay').hidden = false;
+    // Other iPhone browsers (Chrome, Gmail's viewer) can't add web apps to the home screen.
+    $('notSafari').hidden = !/CriOS|FxiOS|EdgiOS|GSA|FBAN|Instagram/.test(ua);
+  } else if (isAndroid) {
+    $('androidWay').hidden = false;
+    $('installBtn').hidden = !installEvent;
+    $('androidSteps').hidden = !!installEvent;
+  } else {
+    $('otherWay').hidden = false;
+  }
+}
+
+window.addEventListener('beforeinstallprompt', function (e) {
+  e.preventDefault();
+  installEvent = e;
+  if (!$('install').hidden) { $('installBtn').hidden = false; $('androidSteps').hidden = true; }
+});
+window.addEventListener('appinstalled', function () { installEvent = null; openApp(); });
+$('installBtn').addEventListener('click', function () {
+  if (!installEvent) return;
+  installEvent.prompt();
+  installEvent.userChoice.then(function (c) { if (c.outcome !== 'accepted') { $('installBtn').hidden = true; $('androidSteps').hidden = false; } installEvent = null; });
+});
+$('openNow').addEventListener('click', function () { try { localStorage.setItem('aceOpenInBrowser', '1'); } catch (e) {} openApp(); });
+$('retry').addEventListener('click', function () { if (navigator.onLine) openApp(); });
+window.addEventListener('online', function () { if (!$('offline').hidden) openApp(); });
+
+// From the home screen: straight into the app. In a browser: offer to install, unless they chose to skip it.
+var skip = false;
+try { skip = localStorage.getItem('aceOpenInBrowser') === '1'; } catch (e) {}
+if (standalone || skip || /[?&]open=1/.test(location.search)) openApp(); else showInstall();
+</script>
+</body>
+</html>
